@@ -1,5 +1,6 @@
 package com.devsuperior.dsmeta.repositories;
 
+import com.devsuperior.dsmeta.dto.SaleReportDto;
 import com.devsuperior.dsmeta.projections.SaleReportProjection;
 import com.devsuperior.dsmeta.projections.SaleSummaryProjection;
 import org.springframework.data.domain.Page;
@@ -22,22 +23,27 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
        AND LOWER(tb_seller.name) LIKE LOWER('%L%')
        GROUP BY tb_seller.name, tb_sales.date*/
 
-    @Query (nativeQuery = true, value = "SELECT tb_seller.id, tb_sales.date, SUM(tb_sales.amount), tb_seller.name " +
+    /*@Query (nativeQuery = true, value = "SELECT tb_seller.id, tb_sales.date, SUM(tb_sales.amount), tb_seller.name " +
             "FROM tb_sales " +
             "INNER JOIN tb_seller ON tb_sales.seller_id = tb_seller.id " +
             "WHERE tb_sales.date BETWEEN :minimunDate AND :maximumDate " +
             "AND LOWER(tb_seller.name) LIKE LOWER(CONCAT('%',:sellerName,'%')) " +
             "GROUP BY tb_seller.name, tb_sales.date")
-    Page<SaleReportProjection> querySalesReportSql(LocalDate minimunDate, LocalDate maximumDate, String sellerName, Pageable pageable);
+    Page<SaleReportProjection> querySalesReportSql(LocalDate minimunDate, LocalDate maximumDate, String sellerName, Pageable pageable);*/
 
-//Consulta no formato SQL do Sumario de Vendas
+    //Consulta no formato JPQL do Relatorio de Vendas
+    @Query("SELECT new com.devsuperior.dsmeta.dto.SaleReportDto(obj.id, obj.amount, obj.date, obj.seller.name) " +
+            "FROM Sale obj " +
+            "WHERE UPPER(obj.seller.name) LIKE UPPER(CONCAT('%', :name, '%')) " +
+            "AND obj.date BETWEEN :startDate AND :endDate")
+    Page<SaleReportDto> querySalesReportJpql(String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
+
+    //Consulta no formato SQL do Sumario de Vendas
     /*SELECT tb_seller.name, SUM(tb_sales.amount)
     FROM tb_sales
     INNER JOIN tb_seller ON tb_sales.seller_id = tb_seller.id
     WHERE tb_sales.date BETWEEN '2022-01-01' AND '2022-06-30'
     GROUP BY tb_seller.name*/
-
-    //OK
     @Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) " +
             "FROM tb_sales " +
             "INNER JOIN tb_seller ON tb_sales.seller_id = tb_seller.id " +
