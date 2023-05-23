@@ -19,7 +19,7 @@ public class SaleSummaryDto {
     }
 
     public SaleSummaryDto(SaleSummaryProjection saleSummaryProjection) {
-        name = saleSummaryProjection.getSellerName();
+        name = saleSummaryProjection.getName();
         total = saleSummaryProjection.getTotal();
     }
 

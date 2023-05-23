@@ -44,7 +44,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     INNER JOIN tb_seller ON tb_sales.seller_id = tb_seller.id
     WHERE tb_sales.date BETWEEN '2022-01-01' AND '2022-06-30'
     GROUP BY tb_seller.name*/
-    @Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) " +
+    @Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) AS total " +
             "FROM tb_sales " +
             "INNER JOIN tb_seller ON tb_sales.seller_id = tb_seller.id " +
             "WHERE tb_sales.date BETWEEN :minimunDate AND :maximumDate " +
